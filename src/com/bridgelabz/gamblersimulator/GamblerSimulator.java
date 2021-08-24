@@ -4,6 +4,7 @@ public class GamblerSimulator {
 
 	public static final double INITIAL_STAKE = 100;
 	public static final double STAKE_BET = 1;
+	public static final int NUMBER_OF_PLAYS =20;
 	public static int stake = 0;
 	
 
@@ -35,7 +36,14 @@ public class GamblerSimulator {
 
 	public static void main(String[] args) {
 		System.out.println("Welcome To Gambler Simulation");
-		gamblerDecision();
-	}
+		double balance = 0;
+	
+		for(int numberOfDays = 0; numberOfDays<= NUMBER_OF_PLAYS ; numberOfDays++) {
+			int stake = 100;
+			gamblerDecision();
+			balance = balance+stake; 			
+		}
+			System.out.println("Total amount : " + balance);
+		}
 
 }
