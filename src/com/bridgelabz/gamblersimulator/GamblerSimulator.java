@@ -5,9 +5,10 @@ public class GamblerSimulator {
 	public static final int INITIAL_STAKE = 100;
 	public static final double STAKE_BET = 1;
 	public static final int NUMBER_OF_PLAYS = 30;
+	public static final int NUMBER_OF_MONTHS = 12;
 	public static int stake = 0, monthlyWins = 0, monthlyLosses = 0;
 	public static double totalStake = 0, maximumWin = 0, maximumLoss = 0, amountLostOrWon;
-	static int maxWinDay, maxLossDay;
+	static int maxWinMonth, maxLossMonth;
 
 	public static boolean winOrLose() {
 		boolean isWinner = false;
@@ -37,22 +38,20 @@ public class GamblerSimulator {
 		totalStake = totalStake+stake;
 	}
 	
-	public static boolean calculateMaximumWin() {
-		
-		if(totalStake > maximumWin) {
-			maximumWin = totalStake;
+	public static boolean calculateMaximumWin(int balance) {
+		double profit = balance - (INITIAL_STAKE*NUMBER_OF_PLAYS);
+		if(profit> maximumWin) {
+			maximumWin = profit;
 			return true;
 		}
 		return false;
 	}
 	
-	public static boolean calculateMaximumLoss(){
-		if(totalStake < INITIAL_STAKE) {
-			double loss = INITIAL_STAKE - totalStake;
-			if(loss> maximumLoss) {
-				maximumLoss = loss;
-				return true;
-			}
+	public static boolean calculateMaximumLoss(int balance){
+		double loss = (INITIAL_STAKE*NUMBER_OF_PLAYS) - balance;
+		if(loss > maximumLoss ) {
+			maximumLoss = loss;
+			return true;
 		}
 		return false;
 				
@@ -68,51 +67,57 @@ public class GamblerSimulator {
 	
 	public static void main(String[] args) {
 		boolean playAgain = true;
-		while(playAgain) {
+		for(int month = 0; month < NUMBER_OF_MONTHS; month++) {
 			
-			boolean resign = false;
-			boolean betWin = false;
-			System.out.println("Welcome To Gambler Simulation");
-			double balance = 0;
-			
-			for (int numberOfDays = 0; numberOfDays <= NUMBER_OF_PLAYS; numberOfDays++) {
-				int stake = INITIAL_STAKE;
-				while(resign == false){
-					betWin = winOrLose();
-					if(gamblerDecision() == true) {
-						calculateStake();
+			while(playAgain) {
+
+				System.out.println("Welcome To Gambler Simulation");
+				boolean resign = false;
+				boolean betWin = false;
+				int monthlyStake = 0;
+				
+				for (int numberOfDays = 0; numberOfDays <= NUMBER_OF_PLAYS; numberOfDays++) {
+					int stake = INITIAL_STAKE;
+					while(resign == false){
+						betWin = winOrLose();
+						if(gamblerDecision() == true) {
+							calculateStake();
+							monthlyStake += totalStake; 
+							break;
+						}
 						
-						break;
 					}
-					
 				}
-				if(calculateMaximumWin()) {
-					maxWinDay = numberOfDays;						
+				System.out.println("Total amount with Player after "+NUMBER_OF_PLAYS+" days : " +monthlyStake);
+				int profitOrLoss = monthlyStake - INITIAL_STAKE * NUMBER_OF_PLAYS;
+				System.out.println("Amount Won or Lost = " + profitOrLoss);
+				
+				if(calculateMaximumWin(monthlyStake)) {
+					maxWinMonth = month;						
 				}
-				if(calculateMaximumLoss()) {
-					maxLossDay = numberOfDays;
+				
+				if(calculateMaximumLoss(monthlyStake)) {
+					maxLossMonth = month;
+				}
+				
+				
+				System.out.println("Number of Days Lost : " + monthlyLosses);
+				System.out.println("Number of Days Won : " + monthlyWins);
+				System.out.println("Maximum Amount Won: " + maximumWin);
+				System.out.println("Maximum Amount Won In Month " + maxWinMonth+1);
+				System.out.println("Maximum Amount Loss: " + maximumLoss);
+				System.out.println("Maximum Amount Loss In Month " + maxLossMonth+1);
+				
+				if(monthlyStake > INITIAL_STAKE*NUMBER_OF_PLAYS) {
+					playAgain = true;
+				}
+				else {
+					playAgain = false;
 				}
 			}
 			
-			System.out.println("Total amount with Player after "+NUMBER_OF_PLAYS+" days : " + totalStake);
 			
-			amountLostOrWon = (INITIAL_STAKE * NUMBER_OF_PLAYS) - totalStake;
-			System.out.println("Amount Won or Lost = " + amountLostOrWon);
-			System.out.println("Number of Days Lost : " + monthlyLosses);
-			System.out.println("Number of Days Won : " + monthlyWins);
-			System.out.println("Maximum Amount Won: " + maximumWin);
-			System.out.println("Maximum Amount Won On Day " + maxWinDay);
-			System.out.println("Maximum Amount Loss: " + maximumLoss);
-			System.out.println("Maximum Amount Loss On Day " + maxLossDay);
-			
-			if(playNextMonth()) {
-				playAgain = true;
-			}
-			else {
-				playAgain = false;
-			}
 		}
-
+		
 	}
-
 }
